@@ -1,0 +1,32 @@
+CREATE OR REPLACE PROCEDURE FLIGHTSBYSTATUS (IN_STATUS IN VARCHAR2) AS
+  CURSOR fSTATUS IS
+    SELECT DISTINCT f.FLIGHT_CODE, al.AL_NAME, f.ARRIVAL, f.DEPARTURE, f.SOURCE, 
+                    f.DESTINATION, f.STATUS, f.FLIGHTTYPE
+    FROM Airline al, Flight f
+    WHERE al.AIRLINEID = f.AIRLINEID
+      AND f.STATUS = IN_STATUS;
+
+  FlightStatus fSTATUS%ROWTYPE;
+
+BEGIN
+  OPEN fSTATUS;
+  LOOP
+    FETCH fSTATUS INTO FlightStatus;
+    EXIT WHEN fSTATUS%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(FlightStatus.FLIGHT_CODE || '  ' || FlightStatus.AL_NAME || '  ' ||
+                         FlightStatus.ARRIVAL || '  ' || FlightStatus.DEPARTURE || '  ' ||
+                         FlightStatus.SOURCE || '  ' || FlightStatus.DESTINATION || '  ' ||
+                         FlightStatus.STATUS || '  ' || FlightStatus.FLIGHTTYPE);
+  END LOOP;
+  CLOSE fSTATUS;
+END FLIGHTSBYSTATUS;
+
+-- Executing the procedure for 'Delayed' flights:
+BEGIN
+  FLIGHTSBYSTATUS('Delayed');
+END;
+
+-- Executing the procedure for 'On-time' flights:
+BEGIN
+  FLIGHTSBYSTATUS('On-time');
+END;
